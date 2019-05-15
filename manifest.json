@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+
+  "name": "密码管理",
+  "description": "密码记录、保存、自动填充等",
+  "version": "1.0",
+  "homepage_url": "http://www.flyu.me",
+
+  "permissions": [	//像浏览器申请权限
+    "http://*/*",	//跨域请求数据
+    "https://*/*",
+    "tabs",			//访问浏览器选项卡
+    "activeTab",	//获取当前活动选项卡
+    "notifications",//浏览器通知
+    "storage",		//储存
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "browser_action": {
+    "default_icon": "img/icon_128.png",
+    "default_title": "密码管理",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {	//使扩展常驻后台
+    "scripts": ["js/jquery-2.1.1.js", "js/background.js"]   //扩展启动时自动创建一个包含所有指定脚本的页面
+  },
+  "icons": {
+    "16": "img/icon_16.png",
+    "48": "img/icon_48.png",
+    "128": "img/icon_128.png"
+  },
+  // 普通页面能够直接访问的插件资源列表，如果不设置是无法直接访问的
+  "web_accessible_resources": [
+
+  ],
+  "chrome_url_overrides": {	//自定义的页面替换 Chrome 相应默认的页面
+    //"newtab": "tab.html",	//新标签页
+    //"bookmarks": "bookmarks.html",//书签页
+    //"history": "history.html"	//历史记录
+  }
+}

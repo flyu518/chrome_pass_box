@@ -1,0 +1,113 @@
+@charset "utf-8";
+/*text-size-adjust:100%; 当移动端横屏时字体不进行放大（meta要设置viewport属性）*/
+html { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+/*font-smoothing: antialiased;这个属性可以使页面上的字体抗锯齿,使用后字体看起来会更清晰舒服。(好像只对mac，ios使用)*/
+html *{ outline:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -ms-text-size-adjust:100%; -webkit-text-size-adjust:100%; }
+/*tap-highlight-color设置链接、按钮轻点时的高亮颜色（移动端）*/
+body{ -webkit-tap-highlight-color:rgba(0,0,0,0); }
+/*appearance:normal; 让元素看起来是原来的样子*/
+* { -webkit-tap-highlight-color:transparent;  }
+/*box-sizing: border-box; 解决蓝色边框（设置盒子模型的计算方式，border-box让元素的宽高包括padding和border）*/
+/* * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+*:before, *:after { -webkit-box-sizing: border-box;  -moz-box-sizing: border-box; box-sizing: border-box; } */
+html{ font-size: 62.5%; height: 100%; overflow-y:auto; }
+body{ margin:0rem; padding: 0rem;
+    font: 14px/1.5em "Microsoft YaHei",Tahoma, Arial, Geneva, HELVETICA;
+    position:relative; /*不设置定位ie7很恶心*/
+    -webkit-font-smoothing: antialiased;
+    -webkit-backface-visibility:hidden;  /*backface-visibility元素旋转时是否看到它的背面*/
+    -moz-backface-visibility:hidden;
+    -ms-backface-visibility:hidden;
+    backface-visibility: hidden;
+    overflow-y:auto; overflow-x: auto;
+}
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del,
+dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table,
+caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav,
+section, summary, time, mark, audio, video{
+    margin: 0; padding: 0; outline: none; border: 0;
+    background: transparent;
+    vertical-align: baseline;
+    font-style: inherit; }
+ol,ul,li{ list-style:none;  font-style: normal; }
+del{ text-decoration:line-through; }
+address,caption,cite,code,dfn,em,th,var,i{ font-style:normal; font-weight:500}
+h1,h2,h3,h4,h5,h6 {  font-size:100%; font-weight: normal; }
+header, nav, menu, article, aside, dialog, footer, section, footer, figure{ display: block; }
+/* ==== */
+fieldset,img{ border:none; }
+abbr,acronym{ border:none; font-variant:normal}
+sub,sup{ font-size:75%; line-height:0; position:relative; vertical-align:baseline; }
+sup{ top:-.5em}
+sub{ bottom:-.25em}
+/* 设置显示和隐藏，通常用来与 js 配合 */
+.hide { display:none; }
+.block { display:block; }
+/* =================浮动==================== */
+.clear{  zoom:1; /* for ie6 & ie7 */ }
+.clear:after{ content:''; display:block; clear:both; height:0; visibility:hidden; }
+/* 设置浮动，减少浮动带来的 bug */
+.fl,.fr { display:inline; }
+.fl { float:left; }
+.fr { float:right; }
+q:before,q:after{ content:''; }
+/* =================a，img==================== */
+img{ display:inline-block; border:none; vertical-align:middle; -webkit-touch-callout: none; /*禁用系统菜单（ios上）*/}
+ins,a { text-decoration:none;  }
+a:focus,*:focus { outline:none;  }
+a{ cursor: pointer; color:#535353; display:inline-block; }
+a:hover{ text-decoration:none; }
+
+span{ display:inline-block; }
+/* =================input/button/select/textarea==================== */
+input{
+    outline-color: invert ;
+    outline-style: none ;
+    outline-width: 0px ;
+    border: none ;
+    border-style: none ;
+    text-shadow: none ;
+    -webkit-appearance: none ;
+    -webkit-user-select: text ;
+    outline-color: transparent ;
+    box-shadow: none;
+}
+input, label{ display:inline-block; vertical-align:middle; }
+input,select,textarea{ font-size:100%; }
+/*去掉number属性上下箭头*/
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
+/*添加input placeholder属性默认颜色*/
+::-webkit-input-placeholder {color: #808080; }
+:-ms-input-placeholder { color: #808080; }
+::-moz-placeholder { color: #808080; }
+input[type=number]{ text-transform:uppercase; }
+
+select{ border-radius:0; }
+button[type="button"],
+button[type="submit"],
+input[type="submit"],
+input[type="file"],
+input[type="button"]{ cursor: pointer;-webkit-appearance:button; }
+input[type=search]{ -webkit-appearance:textfield; }
+input[type=search]::-webkit-search-cancel-button,
+input[type=search]::-webkit-search-decoration { -webkit-appearance:none; }
+input::-ms-clear { display:none; /*去除框框后面的'X'（清除按钮）*/ }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button { margin: 0;-webkit-appearance: none; }
+input:focus::-webkit-input-placeholder { color: transparent; }
+input:focus:-ms-input-placeholder {color: transparent; }
+input:focus::-moz-placeholder { color: transparent; }
+
+textarea { resize: vertical; }
+textarea, input[type=text],input[type=password] { width:100%; }
+input, textarea, select { color: #555; }
+button, input, select, textarea { padding: 0px; -webkit-appearance: normal; -moz-appearance: normal; appearance: normal; }
+input[type=checkbox] { -webkit-appearance: checkbox;-moz-appearance: checkbox;appearance: checkbox; }
+input[type=radio] { -webkit-appearance: radio;-moz-appearance: radio; appearance: radio; }
+input[type=radio],input[type=checkbox]{ cursor:pointer; }
+
+/* =================table==================== */
+table{ border-collapse:collapse; border-spacing:0; width: 100%; border: 1px solid #DDD; }
+caption,th{text-align:left}
+table th, table td { border: 1px solid #DDD; text-align:left; white-space: pre-wrap; }

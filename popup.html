@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>密码管理</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="css/popup.css">
+</head>
+<body>
+    <div id="wrap">
+        <div id="main">
+            <div class="search">
+                <input class="keyword" type="text" placeholder="网站名">
+                <div class="btn"></div>
+            </div>
+            <div class="group">
+                <list>
+                    <li>站点列表</li>
+                    <li>添加站点</li>
+                    <li>生成密码</li>
+                </list>
+            </div>
+            <div class="bottom clear">
+                <div class="more fl">更多功能</div>
+                <div class="user fr">
+                    <div class="photo"></div>
+                    <div class="name">flyu啊啊你在安挨个奥赛发森爱</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+<div id="login_page" class="hide">
+    <form class="" action="">
+        <div class="form-item">
+            <label class="form-label">账号</label>
+            <div class="input-inline">
+                <input type="text" name="username" required  lay-verify="required" placeholder="请输入账号" autocomplete="off" class="input">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="form-label">密码</label>
+            <div class="input-inline">
+                <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item form-item-btn">
+            <div class="input-block">
+                <div class="btn">立即提交</div>
+                <!--<button type="reset" class="btn btn-primary">重置</button>-->
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="js/jquery-2.1.1.js" type="text/javascript" charset="utf-8"></script>
+<script src="layui/layui.js"></script>
+<script src="layui/layui.all.js"></script>
+<script src="js/popup.js" type="text/javascript" charset="UTF-8"></script>
+</html>
