@@ -1,9 +1,8 @@
 $(function(){
     var login_url = 'http://www.yii.com/user/login';
-    var login_url = 'http://www.ua.com/test/test';
 
     $('.bottom .user').click(function(){
-        layer.open({
+        var index = layer.open({
             type: 1,
             skin: 'layui-layer-demo', //样式类名
             closeBtn: 0, //不显示关闭按钮
@@ -25,6 +24,7 @@ $(function(){
 
         if(username == '' || !username || password == '' || !username){
             layer.msg('账户或密码不能为空');
+            return;
         }
 
         var request_data = {
@@ -32,11 +32,15 @@ $(function(){
             password: password
         };
 
-        $.get(login_url, request_data, function(data){
+        $.post(login_url, request_data, function(data){
             console.log(data);
 
             if(data.code == 200){
                 layer.msg('登录成功');
+                setTimeout(function(){
+                    $('#login_page').hide();
+                    layer.closeAll();
+                }, 1000);
             }else{
                 layer.msg(data.msg);
             }
