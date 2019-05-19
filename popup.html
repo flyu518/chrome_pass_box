@@ -11,21 +11,22 @@
     <div id="wrap">
         <div id="main">
             <div class="search">
-                <input class="keyword" type="text" placeholder="网站名">
+                <input class="keyword" type="text" placeholder="网站名、备注、账号">
                 <div class="btn"></div>
             </div>
-            <div class="group">
-                <list>
-                    <li>站点列表</li>
-                    <li>添加站点</li>
-                    <li>生成密码</li>
-                </list>
-            </div>
+            <list class="list">
+                <!--<li>
+                    <div class="text">淘宝</div>
+                    <div class="btn-warp">
+                        <span class="btn copy-pass" title="复制密码"></span><span class="btn delete" title="删除"></span>
+                    </div>
+                </li>-->
+            </list>
             <div class="bottom clear">
                 <div class="more fl">更多功能</div>
                 <div class="user fr">
                     <div class="photo"></div>
-                    <div class="name">flyu啊啊你在安挨个奥赛发森爱</div>
+                    <div class="name">登录</div>
                 </div>
             </div>
         </div>
@@ -33,24 +34,145 @@
     </div>
 </body>
 <div id="login_page" class="hide">
-    <form class="" action="">
+    <form class="form" action="">
         <div class="form-item">
             <label class="form-label">账号</label>
             <div class="input-inline">
-                <input type="text" name="username" required  lay-verify="required" placeholder="请输入账号" autocomplete="off" class="input">
+                <input type="text" name="username" placeholder="请输入账号" autocomplete="off" class="input">
             </div>
         </div>
         <div class="form-item">
             <label class="form-label">密码</label>
             <div class="input-inline">
-                <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="input">
+                <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item hide password_repeat_div">
+            <label class="form-label">确认密码</label>
+            <div class="input-inline">
+                <input type="password" name="password_repeat" placeholder="请输入密码" autocomplete="off" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item hide email_div">
+            <label class="form-label">邮箱</label>
+            <div class="input-inline">
+                <input type="text" name="email" placeholder="必须" autocomplete="off" class="input">
             </div>
             <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
         <div class="form-item form-item-btn">
             <div class="input-block">
+                <div class="btn login">登录</div>
+                <div class="btn register">注册</div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="add_page" class="hide">
+    <form class="form" action="">
+        <div class="form-item clear">
+            <label class="form-label">网站名</label>
+            <div class="input-inline">
+                <input type="text" name="site_name" placeholder="必填" class="input">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="form-label">备注</label>
+            <div class="input-inline">
+                <input type="text" name="desc" placeholder="" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item">
+            <label class="form-label">账号</label>
+            <div class="input-inline">
+                <input type="text" name="username" placeholder="必填" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item">
+            <label class="form-label">密码</label>
+            <div class="input-inline-aux">
+                <input type="text" name="password" placeholder="必填" class="input">
+            </div>
+            <div class="form-mid word-aux"><div class="create-random">自动生成</div></div>
+        </div>
+        <div class="form-item">
+            <label class="form-label">网站网址</label>
+            <div class="input-inline">
+                <input type="text" name="site_url" placeholder="必须" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item">
+            <label class="form-label">登录网址</label>
+            <div class="input-inline">
+                <input type="text" name="site_login_url" placeholder="自动登录预留" class="input">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item form-item-btn">
+            <input type="hidden" name="id" value="">
+            <div class="input-block">
                 <div class="btn">立即提交</div>
                 <!--<button type="reset" class="btn btn-primary">重置</button>-->
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="more_page" class="hide">
+    <list class="list more-list">
+        <li>
+            <div class="text add-pass">添加站点</div>
+        </li>
+        <li>
+            <div class="text create-random">生成随机密码</div>
+        </li>
+        <li>
+            <div class="text up-cloud">上传数据至服务器</div>
+        </li>
+        <li>
+            <div class="text down-cloud">下载服务器数据</div>
+        </li>
+        <li>
+            <div class="text clear-local">清空本地站点数据</div>
+        </li>
+        <li>
+            <div class="text clear-cloud">清空服务器站点数据</div>
+        </li>
+    </list>
+</div>
+
+<div id="create_random" class="hide">
+    <form class="form layui-form" action="">
+        <div class="form-item">
+            <label class="form-label">长度</label>
+            <div class="input-inline">
+                <input type="number" name="num" value="10" placeholder="密码长度" autocomplete="off" class="input">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="form-label">类型</label>
+            <div class="input-inline">
+                <input type="radio" name="type" value="1" title="数字+字母+符号"checked>
+                <input type="radio" name="type" value="2" title="数字+字母">
+                <input type="radio" name="type" value="3" title="数字">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item">
+            <label class="form-label">结果</label>
+            <div class="input-inline">
+                <input type="text" name="password" placeholder="生成的密码" autocomplete="off" class="input">
+            </div>
+        </div>
+        <div class="form-item form-item-btn">
+            <div class="input-block">
+                <div class="btn">生成</div>
             </div>
         </div>
     </form>
@@ -60,4 +182,5 @@
 <script src="layui/layui.js"></script>
 <script src="layui/layui.all.js"></script>
 <script src="js/popup.js" type="text/javascript" charset="UTF-8"></script>
+<script src="js/chrome_js.js" type="text/javascript" charset="UTF-8"></script>
 </html>

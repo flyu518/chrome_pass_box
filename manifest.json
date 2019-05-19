@@ -13,6 +13,9 @@
     "activeTab",	//获取当前活动选项卡
     "notifications",//浏览器通知
     "storage",		//储存
+    "bookmarks",
+    "tabs",
+    "downloads",
     "webRequest",
     "webRequestBlocking"
   ],

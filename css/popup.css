@@ -51,21 +51,63 @@ body{
     background-image: url("../img/search_hover.png");
 }
 
-.group list{
+.list{
     font-size: 16px;
     margin: 10px;
     display: block;
 }
 
-.group li{
-    height: 36px;
-    line-height: 36px;
-    padding: 0px 0 0 25px;
-    cursor: pointer;
+.list li{
+    position: relative;
+    border-bottom: 1px dashed #f1f1f1;
 }
-.group li:hover{
+.list li:hover{
     background: #f1f1f1;
 }
+.list div{
+    display: inline-block;
+}
+.list .text{
+    width: 70%;
+    height: 36px;
+    line-height: 36px;
+    padding-left: 24px;
+    overflow: hidden;
+    cursor: pointer;
+    /*background-image: url("../img/search.png");*/
+    background-position: 4px center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+}
+.list .btn-warp{
+    height: 100%;
+    padding: 0 10px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.list .btn{
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 50%;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.list .copy-pass{
+    background-image: url('../img/copy.png');
+}
+.list .delete{
+    background-image: url('../img/delete.png');
+}
+
 .bottom{
     min-width:300px;
     width: 100vw;
@@ -99,7 +141,8 @@ body{
     height: 26px;
     margin-right: 4px;
     display: inline-block;
-    background: url("http://thirdwx.qlogo.cn/mmopen/weX0BI74aNk6mWLrvNV16vkcCJdfuRf6JganibYMuXUibcr8zpgkJiaCE2xIHXk2qtUVVu69A9GUGkdAxMSs3fdj350Mav9FgRL/132") no-repeat center center;
+    background-repeat: no-repeat;
+    background-position: center center;
     background-size: 26px 26px;
     border-radius: 50%;
     background-color: grey;
@@ -111,12 +154,27 @@ body{
     overflow: hidden;
 }
 
+#add_page .create-random{
+    cursor: pointer;
+    color: #01AAED;
+}
+#add_page .create-random:hover{
+     color: #0000FF;
+ }
+
+/*------------------------form表单-------开始-------------*/
+.layui-layer-page{
+    width: 90vw;
+}
+.form{
+    padding: 20px 0;
+}
 .form-item{
     margin-bottom: 5px;
 }
 .form-item .form-label{
     min-width: 60px;
-    width: 30vw;
+    width: 30%;
     padding: 6px 0px;
     height: 20px;
     line-height: 20px;
@@ -124,47 +182,55 @@ body{
     display: inline-block;
 }
 .input-inline{
+    width: 60%;
     display: inline-block;
+}
+.input-inline-aux{
+    width: 35%;
+    display: inline-block;
+}
+.word-aux{
+    width: 25%;
+    font-size: 12px;
+    display: inline-block;
+}
+.word-aux .link{
+    padding: 2px 4px;
+    color: #0A8CD2;
+    cursor: pointer;
+    display: inline-block;
+}
+.word-aux .link:hover{
+    color: #01AAED;
 }
 .input-block{
     display: block;
 }
-.form-item .input-inline input{
-    min-width: 50vw;
+.form-item .input{
     height: 30px;
     border: 1px solid #e6e6e6;
     border-radius: 2px;
     padding-left: 5px;
+    box-sizing:border-box;
 }
+
 .form-item-btn{
     margin-top: 20px;
+}
+.form-item-btn .input-block{
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
 }
 .form-item .btn{
     width: 100px;
     height: 30px;
     line-height: 30px;
     text-align: center;
+    display: inline-block;
     border-radius: 2px;
-    margin: 0 auto;
     color: #fff;
     background: #009688;
     cursor: pointer;
 }
-
-
-#login_page{
-    width: 80vw;
-    padding: 20px 0;
-    /*position: absolute;
-    left: -1000px;
-    top: -1000px;*/
-}
-#login_page form{
-
-}
-#login_page label{
-    width: auto;
-}
-#login_page .layui-input-inline{
-    margin-left: 5px;
-}
+/*------------------------form表单-------结束-------------*/
