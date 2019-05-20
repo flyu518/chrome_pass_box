@@ -39,9 +39,10 @@
     "48": "img/icon_48.png",
     "128": "img/icon_128.png"
   },
+  //"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",  //如果是外部链接，要加这个才能用，但是也仅限https 的
   // 普通页面能够直接访问的插件资源列表，如果不设置是无法直接访问的
   "web_accessible_resources": [
-
+      "js/chrome_js.js"
   ],
   "chrome_url_overrides": {	//自定义的页面替换 Chrome 相应默认的页面
     //"newtab": "tab.html",	//新标签页
