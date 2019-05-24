@@ -11,7 +11,7 @@
     <div id="wrap">
         <div id="main">
             <div class="search">
-                <input class="keyword" type="text" placeholder="网站名、备注、账号">
+                <input class="keyword" type="text" placeholder="网站名、备注、账号，多个空格隔开">
                 <div class="btn"></div>
             </div>
             <list class="list">
@@ -89,7 +89,7 @@
         <div class="form-item">
             <label class="form-label">账号</label>
             <div class="input-inline">
-                <input type="text" name="username" placeholder="必填" class="input">
+                <input type="text" name="username" placeholder="必填" class="input" >
             </div>
             <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
@@ -103,19 +103,20 @@
         <div class="form-item">
             <label class="form-label">网站网址</label>
             <div class="input-inline">
-                <input type="text" name="site_url" placeholder="必须" class="input">
+                <input type="text" name="site_url" placeholder="预留，http://|https://" class="input">
             </div>
             <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
         <div class="form-item">
             <label class="form-label">登录网址</label>
             <div class="input-inline">
-                <input type="text" name="site_login_url" placeholder="自动登录预留" class="input">
+                <input type="text" name="site_login_url" placeholder="自动登录预留，http://|https://" class="input">
             </div>
             <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
         <div class="form-item form-item-btn">
             <input type="hidden" name="id" value="">
+            <input type="hidden" name="_index" value="">
             <div class="input-block">
                 <div class="btn">立即提交</div>
                 <!--<button type="reset" class="btn btn-primary">重置</button>-->
@@ -127,16 +128,22 @@
 <div id="more_page" class="hide">
     <list class="list more-list">
         <li>
+            <div class="text sync-method">数据同步方式<span class="show-sync">当前：<i>手动</i></span></div>
+        </li>
+        <li>
             <div class="text add-pass">添加站点</div>
         </li>
         <li>
             <div class="text create-random">生成随机密码</div>
         </li>
-        <li>
+        <!--<li>
             <div class="text up-cloud">上传数据至服务器</div>
         </li>
         <li>
             <div class="text down-cloud">下载服务器数据</div>
+        </li>-->
+        <li>
+            <div class="text up-down-cloud">同步本地和服务器数据</div>
         </li>
         <li>
             <div class="text clear-local">清空本地站点数据</div>
@@ -144,9 +151,34 @@
         <li>
             <div class="text clear-cloud">清空服务器站点数据</div>
         </li>
+        <li>
+            <div class="text download">下载扩展版</div>
+        </li>
+        <li>
+            <div class="text web">网页版（数据实时，看服务器数据）</div>
+        </li>
     </list>
 </div>
 
+<div id="sync_method" class="hide">
+    <form class="form layui-form" action="">
+        <p>手动：没有网络也可以使用，不同步不用登录</p>
+        <p>自动：必须在有网络的情况下，需要登录，及时更新（10s）</p>
+        <div class="form-item">
+            <label class="form-label">同步方式</label>
+            <div class="input-inline">
+                <input type="radio" name="sync_method" value="1" title="手动">
+                <input type="radio" name="sync_method" value="2" title="自动">
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
+        </div>
+        <div class="form-item form-item-btn">
+            <div class="input-block">
+                <div class="btn submit">切换</div>
+            </div>
+        </div>
+    </form>
+</div>
 <div id="create_random" class="hide">
     <form class="form layui-form" action="">
         <div class="form-item">
@@ -178,9 +210,10 @@
     </form>
 </div>
 
-<script src="js/jquery-2.1.1.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/jq/jquery-2.1.1.js" type="text/javascript" charset="utf-8"></script>
 <script src="layui/layui.js"></script>
 <script src="layui/layui.all.js"></script>
+<script src="js/common.js" type="text/javascript" charset="UTF-8"></script>
 <script src="js/popup.js" type="text/javascript" charset="UTF-8"></script>
 
 <!--这两个js在 popup.js 中动态加载，不在这切换了

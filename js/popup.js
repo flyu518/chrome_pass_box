@@ -1,143 +1,69 @@
-
-var is_chrome = chrome.extension? true: false; //根据这个加载对应的js【谷歌扩展专用的chrome_js.js|普通web用的web_js.js，两个提供的接口一样】；
-
-/*谷歌扩展不让用这种方式动态加载，用下面的 loadScript() 加载，但是加载了，所有的都要写在回调方法里面
-$('html').append('<script src="js/'+ (is_chrome? 'chrome': 'web') +'_js.js" type="text/javascript" charset="UTF-8"></script>');
-*/
-
-
-var base_url = 'http://www.yii.com';
-var url = {
-    login : base_url +'/user/login',
-    register : base_url +'/user/register',
-    logout : base_url +'/user/logout',
-    pass_index : base_url +'/pass/index',
-    pass_add : base_url +'/pass/add',
-    pass_delete : base_url +'/pass/delete',
-    user_test : base_url +'/user/test',
+try{
+    var is_chrome = chrome.extension? true: false; //根据这个加载对应的js【谷歌扩展专用的chrome_js.js|普通web用的web_js.js，两个提供的接口一样】；
+}catch (e) {
+    var is_chrome = false;
 }
 
-var passUtilJsUrl = "js/"+ (is_chrome? 'chrome': 'web') +"_js.js";
+init_page();
+$(window).resize(function(){
+    init_page();
+});
+
+var user_info       = {};  //先声明，在下面获取后填充上，要不然每次获取都是异步的，很恶心
+var listIsGroup     = true; //列表是否安装26个字母分组显示
+var sync_method     = is_chrome? 1: 2; //同步方式，如果是扩展的默认手动，可以改成自动的（浏览器这个参数没用）
 
 $(function(){
 
-//加载工具脚本
-loadScript(passUtilJsUrl, function(){
-
-        //初始化
-        show_user_info();
-        load_list();
-
-        /*PassUtil._get(url.pass_index, {}, function(data){
-
-        })*/
+//加载对应环境的工具脚本，有点特殊的地方：扩展可以使用普通浏览器下的，但是反过来不行
+loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
         console.log(PassUtil.type);
 
-        //加载站点列表
-        function load_list(obj){
-            obj = !$.isEmptyObject(obj)? obj: {};
-            var p       = obj.p || 1;
-            var limit   = obj.limit || 15;
-            var keyword = obj.keyword || '';
+        //初始化，这是异步的
+        PassUtil.get_session_storage(['user_info', 'sync_method'], function(s){
+            user_info           = s.user_info || {};
+            sync_method         = s.sync_method == 2? 2: 1;
 
-            var request_data = {
-                p:  p,
-                limit: limit,
-                keyword: keyword
-            }
-
-            var index = layer.load(1, {
-                shade: [0.1,'#fff'] //0.1透明度的白色背景
-            });
-
-            PassUtil.pass_list(url.pass_index, request_data, function(data){
-                layer.close(index);
-                console.log(data);
-
-                var li = '';
-
-                if(data.code == 200){
-                    $.each(data.data.list, function(){
-                        li += '<li data-id="'+ $(this)[0].id +'" data-site_name="'+ $(this)[0].site_name +'"\
-                         data-desc="'+ $(this)[0].desc +'" data-username="'+ $(this)[0].username +'" data-password="'+ $(this)[0].password +'"\
-                          data-site_url="'+ $(this)[0].site_url +'" data-site_login_url="'+ $(this)[0].site_login_url +'">\
-                        <div class="text" style="background-image: url(\''+ get_icon($(this)[0].site_url) +'\')" title="'+ $(this)[0].desc +'">'
-                            + $(this)[0].site_name +
-                            '</div> \
-                            <div class="btn-warp">\
-                                <span class="btn copy-pass" title="复制密码"></span><span class="btn delete" title="删除"></span>\
-                            </div>\
-                        </li>';
-                    })
-                }else if(data.code == 300){
-                    li = '<li>数据为空</li>';
-                }else{
-                    li = '<li>请求出错 - '+ (data.sub_msg) +'</li>';
-                }
-
-                $('#main .list').html(li);
-            }, function(data){
-                layer.close(index);
-                console.log(data);
-                var msg = '服务器内部';
-                $('#main .list').html('<li>请求出错 - '+ msg +'</li>');
-            });
-        }
+            show_user_info(user_info);
+            load_list();
+        });
 
         //显示用户信息（如果不传过来则从本地缓存取）
-        function show_user_info(user_info){
-            var user_info = !$.isEmptyObject(user_info)? user_info: {};
-            var username, photo;
+        function show_user_info(data){
+            var _user_info = !$.isEmptyObject(data)? data: user_info;
 
-            if(!$.isEmptyObject(user_info.username)){
-                username = user_info.username;
-                photo = user_info.photo;
-
-                $('.bottom .photo').css({backgroundImage: 'url('+ photo +')'});
-                $('.bottom .name').html(username);
-            }else{
-                PassUtil.get_storage(['username', 'photo'], function(s){  //这个是异步
-
-                    username = !$.isEmptyObject(s.username)? s.username: '登录';
-                    photo = !$.isEmptyObject(s.photo)? s.photo: '';
-
-                    $('.bottom .photo').css({backgroundImage: 'url('+ photo +')'});
-                    $('.bottom .name').html(username);
-                })
+            if(_user_info.photo){
+                $('.bottom .photo').css({backgroundImage: 'url('+ _user_info.photo +')'});
             }
+            $('.bottom .name').html(_user_info.username || '登录');
         }
 
         //退出后页面信息处理
         function logout(){
-            PassUtil.set_storage({
-                username: '',
-                photo: ''
-            });
-
+            PassUtil.logout();
             show_user_info();
-        }
-
-        //获取指定url网站的icon图片
-        function get_icon(url){
-            var domain = get_domain(url);
-            if($.isEmptyObject(domain)) return '';
-
-            return 'http://statics.dnspod.cn/proxy_favicon/_/favicon?domain='+ domain;
         }
 
         //搜索请求
         $('.search').on('click', '.btn', function (e) {
-
             var keyword = $('.search .keyword').val();
             load_list({keyword: keyword});
 
             e.preventDefault();
-            return ;
         });
+        $(".search input").keydown(function(event){
+            if(event.keyCode ==13){
+                var keyword = $('.search .keyword').val();
+                load_list({keyword: keyword});
+            }
+        })
 
         //点击用户框显示登录或退出页面
         $('.bottom .user').click(function(){
-            if($('.bottom .name').html() == '登录'){
+            if(!PassUtil.is_server_online()){
+                return layer.msg('服务器不能访问');
+            }
+            if(!PassUtil.is_online()){
                 layer.open({
                     type: 1,
                     skin: 'layui-layer-demo', //样式类名
@@ -162,7 +88,7 @@ loadScript(passUtilJsUrl, function(){
                     $.get(url.logout, {}, function(data){
                         console.log(data);
 
-                        if(data.code == 200){
+                        if(data.code == 200 || data.sub_code == 404){
                             layer.msg('退出成功');
 
                             logout();
@@ -199,15 +125,11 @@ loadScript(passUtilJsUrl, function(){
             });
 
             $.post(url.login, request_data, function(data){
-                console.log(data);
 
                 if(data.code == 200){
                     layer.msg('登录成功');
 
-                    PassUtil.set_storage({
-                        username: data.data.username,
-                        photo: data.data.photo
-                    });
+                    PassUtil.update_local_user_info(data.data);
 
                     show_user_info();
 
@@ -258,10 +180,7 @@ loadScript(passUtilJsUrl, function(){
                 if(data.code == 200){
                     layer.msg('注册成功');
 
-                    PassUtil.set_storage({
-                        username: data.data.username,
-                        photo: data.data.photo
-                    });
+                    PassUtil.update_local_user_info(data.data);
 
                     show_user_info();
 
@@ -278,12 +197,13 @@ loadScript(passUtilJsUrl, function(){
 
         //点击站点显示添加添加站点页面
         $('#main .list').on('click', '.text', function(e){
-            var id = $(this).parent().data('id') || '';
-            var site_name = $(this).parent().data('site_name') || '';
-            var desc = $(this).parent().data('desc') || '';
-            var username = $(this).parent().data('username') || '';
-            var password = $(this).parent().data('password') || '';
-            var site_url = $(this).parent().data('site_url') || '';
+            var id          = $(this).parent().data('id') || '';
+            var _index      = $(this).parent().data('_index'); //这个有可能是0
+            var site_name   = $(this).parent().data('site_name') || '';
+            var desc        = $(this).parent().data('desc') || '';
+            var username    = $(this).parent().data('username') || '';
+            var password    = $(this).parent().data('password') || '';
+            var site_url    = $(this).parent().data('site_url') || '';
             var site_login_url = $(this).parent().data('site_login_url') || '';
 
             var index = layer.open({
@@ -295,7 +215,9 @@ loadScript(passUtilJsUrl, function(){
                 shadeClose: true, //开启遮罩关闭
                 content: $('#add_page'),
                 success: function(layero, index){
+                    $('#add_page form')[0].reset(); //先重置
                     $('#add_page input[name="id"]').val(id);
+                    $('#add_page input[name="_index"]').val(_index);
                     $('#add_page input[name="site_name"]').val(site_name);
                     $('#add_page input[name="desc"]').val(desc);
                     $('#add_page input[name="username"]').val(username);
@@ -330,6 +252,7 @@ loadScript(passUtilJsUrl, function(){
         $('#main .list').on('click', '.delete', function (e) {
 
             var id = $(this).parent().parent().data('id');
+            var _index = $(this).parent().parent().data('_index');  //本地操作的用到
 
             layer.confirm('要删除吗？', {
                 btn: ['删除','取消'] //按钮
@@ -339,7 +262,7 @@ loadScript(passUtilJsUrl, function(){
                     shade: [0.1,'#fff'] //0.1透明度的白色背景
                 });
 
-                $.post(url.pass_delete, {id: id}, function(data){
+                PassUtil.pass_delete(url.pass_delete, {id: id, _index: _index}, function(data){
                     console.log(data);
 
                     if(data.code == 200){
@@ -357,26 +280,25 @@ loadScript(passUtilJsUrl, function(){
             e.preventDefault();
         });
 
-        //添加站点请求
+        //添加、编辑站点请求
         $('#add_page .btn').click(function () {
             var form = $(this).parents('form')[0];
 
-            var site_name = $(form).find('input[name="site_name"]').val();
-            var username = $(form).find('input[name="username"]').val();
-            var password = $(form).find('input[name="password"]').val();
-            var site_url = $(form).find('input[name="site_url"]').val();
+            var id          = $(form).find('input[name="id"]').val();
+            var site_name   = $(form).find('input[name="site_name"]').val();
+            var username    = $(form).find('input[name="username"]').val();
+            var password    = $(form).find('input[name="password"]').val();
+            var site_url    = $(form).find('input[name="site_url"]').val();
             var site_login_url = $(form).find('input[name="site_login_url"]').val();
 
-            if($.isEmptyObject(site_name) || $.isEmptyObject(username) || $.isEmptyObject(password) || $.isEmptyObject(site_url)){
-                layer.msg('网站名、账户、密码、地址不能为空');
+            if($.isEmptyObject(site_name) || $.isEmptyObject(username) || $.isEmptyObject(password)){
+                layer.msg('网站名、账户、密码不能为空');
                 return;
             }
 
-            var index = layer.load(1, {
-                shade: [0.1,'#fff'] //0.1透明度的白色背景
-            });
+            var index = layer.load(1, {shade: [0.1,'#fff']});
 
-            $.post(url.pass_add, $(form).serialize(), function(data){
+            PassUtil.pass_add(url.pass_add, $(form).serializeArray(), function(data){
                 console.log(data);
 
                 if(data.code == 200){
@@ -389,7 +311,7 @@ loadScript(passUtilJsUrl, function(){
                     }, 1000);
                 }else{
                     layer.close(index);
-                    layer.msg(data.sub_msg.toString());
+                    layer.msg(data.sub_msg && data.sub_msg.toString());
                 }
             });
         });
@@ -406,18 +328,82 @@ loadScript(passUtilJsUrl, function(){
 
         //更多页面
         $('.bottom .more').click(function(){
-
             layer.open({
                 type: 1,
                 skin: 'layui-layer-demo', //样式类名
                 closeBtn: 0, //不显示关闭按钮
                 anim: 2,
-                title: false,
+                title: '更多功能',
                 shadeClose: true, //开启遮罩关闭
                 content: $('#more_page'),
+                success: function(){
+                    if(!is_chrome){
+                        $('#more_page .sync-method').parent().css({display: 'none'});
+                        $('#more_page .up-cloud').parent().css({display: 'none'});
+                        $('#more_page .down-cloud').parent().css({display: 'none'});
+                        $('#more_page .up-down-cloud').parent().css({display: 'none'});
+                        $('#more_page .clear-local').parent().css({display: 'none'});
+                        $('#more_page .web').parent().css({display: 'none'});
+                    }else{
+                        $('#more_page .sync-method i').html(sync_method == 2? '自动': '手动');
+                    }
+                },
                 end:function(){
                     $('#more_page').hide();
                 },
+            });
+        });
+
+        //更多页面-》同步方式页面
+        $('#more_page .sync-method').click(function(e){
+            var index = layer.open({
+                type: 1,
+                skin: 'layui-layer-demo', //样式类名
+                closeBtn: 1, //不显示关闭按钮
+                anim: 2,
+                title: '更改同步方式',
+                shadeClose: true, //开启遮罩关闭
+                content: $('#sync_method'),
+                success: function(){
+                    $('#sync_method input[name="sync_method"][value="'+ sync_method +'"]').attr("checked", true);
+                    layui.use('form', function(){
+                        layui.form.render('radio');
+                    });
+                },
+                end:function(){
+                    $('#sync_method').hide();
+                },
+            });
+
+            e.preventDefault()
+        });
+
+        //更多页面-》同步方式更改请求
+        $('#sync_method .submit').click(function (e) {
+            if(!user_info.user_id){
+                return layer.msg('还未登录');
+            }
+            if(!is_chrome){
+                return layer.msg('只有在扩展环境下才可以设置');
+            }
+
+            var form = $(this).parents('form')[0];
+            var sync_method_tmp = $(form).find('input[name="sync_method"]:checked').val();
+
+            if(sync_method_tmp == sync_method){
+                return layer.msg('选择相同未做更改');
+            }
+
+            layer.confirm('想清楚了吗，要更改吗？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                var index = layer.load(1, {shade: [0.1,'#fff']});
+
+                PassUtil.update_sync_method(sync_method_tmp);
+                layer.close(index);
+                layer.msg('处理成功');
+
+                e.preventDefault();
             });
         });
 
@@ -432,6 +418,9 @@ loadScript(passUtilJsUrl, function(){
                 title: '添加',
                 shadeClose: true, //开启遮罩关闭
                 content: $('#add_page'),
+                success: function(){
+                    $('#add_page form')[0].reset(); //先重置
+                },
                 end:function(){
                     $('#add_page').hide();
                 },
@@ -476,21 +465,60 @@ loadScript(passUtilJsUrl, function(){
             e.preventDefault();
         });
 
-        //更多页面-》清空本地站点数据
-        $('#more_page .clear-local').click(function (e) {
-            layer.confirm('要清空吗？', {
-                btn: ['清空','取消'] //按钮
+        //更多页面-》同步本地和服务器数据（上传和下载的操作合并）
+        $('#more_page .up-down-cloud').click(function (e) {
+            if(!PassUtil.is_online()){
+                layer.msg('离线状态，请登录');
+                return;
+            }
+            layer.confirm('同步之后本地数据会和服务器数据合并，要同步吗？', {
+                btn: ['确定','取消'] //按钮
             }, function(){
+                var index = layer.load(1, {shade: [0.1,'#fff']});
 
-                PassUtil.set_storage({pass_list: []})
+                layer.msg('正在上传，请稍等……');
+                console.log('正在上传，请稍等……');
 
-                layer.msg('处理成功');
+                PassUtil.pass_sync_c(function(response){
+                    layer.close(index);
+
+                    console.log(response);
+                    if(response.code != 200){
+                        console.log('上传失败');
+                        return layer.msg(response.sub_msg && response.sub_msg.toString());
+                    }
+
+                    layer.msg('同步成功');
+                    console.log('同步成功');
+
+                    //load_list();
+                });
                 e.preventDefault();
             });
         });
 
+
+        //更多页面-》清空本地站点数据
+        $('#more_page .clear-local').click(function (e) {
+        layer.confirm('要清空吗？', {
+            btn: ['清空','取消'] //按钮
+        }, function(){
+            PassUtil.pass_clear();
+
+            layer.msg('处理成功');
+
+            load_list();
+            e.preventDefault();
+        });
+    });
+
         //更多页面-》清空服务器站点数据
         $('#more_page .clear-cloud').click(function (e) {
+            if(!user_info.user_id){
+                layer.msg('还未登录');
+                return;
+            }
+
             layer.confirm('要清空吗？', {
                 btn: ['清空','取消'] //按钮
             }, function(){
@@ -499,7 +527,8 @@ loadScript(passUtilJsUrl, function(){
                     shade: [0.1,'#fff'] //0.1透明度的白色背景
                 });
 
-                $.post(url.pass_delete, {clear: 1}, function(data){
+                //这个就不调用删除方法了，如果在谷歌扩展环境的话有点麻烦
+                _post(url.pass_delete, {clear: 1}, function(data){
                     console.log(data);
 
                     if(data.code == 200){
@@ -517,67 +546,95 @@ loadScript(passUtilJsUrl, function(){
     });
 });
 
-/**
- * 用这个方法也是没办法的，谷歌扩展有安全限制，不让用什么append的；所有要用到这里面的方法都要写在回调方法里面
- *
- * @param url
- * @param callback
- */
-function loadScript(url, callback) {
-    var html = document.getElementsByTagName("html")[0];
-    var script = document.createElement("script");
-    script.src = url;
-    var done = false;
 
-    html.appendChild(script);
-    script.onload = script.onreadystatechange = function() {
-        if (!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
-            done = true;
-            callback();
+function init_page() {
+
+    var body_el            = document.body
+    var screen_width       = window.screen.width
+    var is_use_scrollbar   = false;
+
+    //不设置，扩展里面撑不起来
+    body_el.style.width    = screen_width/4+"px"
+    body_el.style.height   = parseInt(screen_width/4*1.6)+"px"
+    body_el.style.setProperty("--scrollbar_width", is_use_scrollbar?'8px':'0px')
+
+    var main_height = $('#main').outerHeight(true);
+    var search_height = $('#main .search').outerHeight(true);
+    var bottom_height = $('#main .bottom').outerHeight(true);
+    $('body').css({height: main_height, width: $('#main').outerWidth(true)});
+    $('#main .list').css({height: main_height - search_height - bottom_height});
+}
+
+//加载站点列表（放在外面是为了让 background.js 同步完成之后调用）
+function load_list(obj){
+    obj = !$.isEmptyObject(obj)? obj: {};
+    var p       = obj.p || 1;
+    var limit   = obj.limit || 15;
+    var keyword = obj.keyword || '';
+
+    var request_data = {
+        p:  p,
+        limit: limit,
+        keyword: $.trim(keyword)
+    }
+
+    var index = layer.load(1, {
+        shade: [0.1,'#fff'] //0.1透明度的白色背景
+    });
+
+    PassUtil.pass_list(url.pass_index, request_data, function(data){
+        layer.close(index);
+        console.log(data);
+
+        var li = '';
+
+        if(data.code == 200){
+            var item;
+            var list = data.data.list;
+
+            if(!listIsGroup){   //以前的直接显示方式
+                $.each(list, function(){
+                    item = $(this)[0];
+
+                    li += '<li data-id="'+ item.id +'" data-_index="'+ item._index +'" data-site_name="'+ item.site_name +'"\
+                         data-desc="'+ item.desc +'" data-username="'+ item.username +'" data-password="'+ item.password +'"\
+                          data-site_url="'+ item.site_url +'" data-site_login_url="'+ item.site_login_url +'">\
+                        <div class="text" style="background-image: url(\''+ get_icon(item.site_url) +'\')" title="'+ item.desc +'">'
+                        + item.site_name +
+                        '</div> \
+                        <div class="btn-warp">\
+                            <span class="btn copy-pass" title="复制密码"></span><span class="btn delete" title="删除"></span>\
+                        </div>\
+                    </li>';
+                })
+            }else{  //以字母分组显示，分组依据 网站名：site_name
+                list = array_group_by_letter(list, 'site_name');
+                //console.log(list);
+                $.each(list, function(){
+                    li += '<div class="letter"><span>'+ $(this)[0]['letter'] +'</span></div>';
+                    $.each($(this)[0]['data'], function(){
+                        item = $(this)[0];
+                        li += '<li data-letter="'+ item +'" data-id="'+ item.id +'" data-_index="'+ item._index +'" data-site_name="'+ item.site_name +'"\
+                                    data-desc="'+ item.desc +'" data-username="'+ item.username +'" data-password="'+ item.password +'"\
+                                    data-site_url="'+ item.site_url +'" data-site_login_url="'+ item.site_login_url +'">\
+                                    <div class="text" style="background-image: url(\''+ get_icon(item.site_url) +'\')" title="'+ item.desc +'">'
+                            + item.site_name +
+                            '</div> \
+                            <div class="btn-warp">\
+                                <span class="btn copy-pass" title="复制密码"></span><span class="btn delete" title="删除"></span>\
+                            </div>\
+                        </li>';
+                    })
+
+
+                });
+            }
+        }else if(data.code == 300){
+            li = '<li>数据为空</li>';
+        }else{
+            li = '<li>出错 - '+ (data.sub_msg) +'</li>';
         }
-    };
-}
 
-/**
- * 获取域名，如：http://www.baidu.com/index/index.php 返回 www.baidu.com
- * @param url
- * @returns {string}
- */
-function get_domain(url){
-    if($.isEmptyObject(url)) return '';
-    if(url.indexOf('.') == -1) return '';
-    url = url.replace(/https?\:\/\//, '').replace(/\/w/);
-    var arr = url.split(/\/|\#|\?/);
-    return arr[0];
-}
-
-/**
- * 获取随机密码
- *
- * @param int   num     生成几位密码，默认10位
- * @param int   type    类型，默认1：数字+字母+符号(,.;@&-=+_)；2：数字+字母；3：数字
- */
-function get_random(num, type){
-    var num = num || 10;
-    var type = type || 1;
-    var zimu = "abcdefghijklmnopqrstuvwxyz";
-    var shuzi = "0123456789";
-    var fuhao = ",.;@&-=+_";
-    var pwd = "";
-
-    if(type == 2){
-        var str = shuzi + zimu;
-    }else if(type == 3){
-        var str = shuzi;
-    }else{
-        var str = shuzi + zimu + fuhao;
-    }
-
-    var str_len = str.length;
-
-    for(var i=0; i<num; i++){
-        pwd += str[Math.floor(Math.random() * str_len)];
-    }
-
-    return pwd;
+        $('#main .list').html(li);
+    });
 }

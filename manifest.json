@@ -32,7 +32,7 @@
     }
   ],
   "background": {	//使扩展常驻后台
-    "scripts": ["js/jquery-2.1.1.js", "js/background.js"]   //扩展启动时自动创建一个包含所有指定脚本的页面
+    "scripts": ["js/jq/jquery-2.1.1.js", "js/common.js", "js/background.js"]   //扩展启动时自动创建一个包含所有指定脚本的页面
   },
   "icons": {
     "16": "img/icon_16.png",

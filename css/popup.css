@@ -1,26 +1,31 @@
 
 body{
-   /* min-width:300px;*/
-    min-height: 400px;
-    background: #000;
+    min-width:300px;
 }
+
+::-webkit-scrollbar{width:0px;height:0px}
+::-webkit-scrollbar-button:vertical{display:none}
+/*滚动槽*/
+::-webkit-scrollbar-track:vertical{background-color:transparent}
+/*滚动块*/
+::-webkit-scrollbar-thumb:vertical{background-color:#eee;border-radius:0px}
+::-webkit-scrollbar-thumb:vertical:hover{background-color:#ccc}
+::-webkit-scrollbar-track-piece{background:transparent;border-radius:0px}
+::-webkit-scrollbar-corner:vertical{background-color:#535353}
+/*::-webkit-scrollbar-resizer:vertical{background-color:#FF6E00}*/
 
 #wrap
 {
-    min-width:300px;
     width :100vw;
     height:100vh;
-    background: #fff;
-    position: relative;
 }
 
 #main
 {
-    min-width:300px;
-    width :100vw;
-    height:100vh;
-    overflow:auto;
+    width :100%;
+    height:100%;
     position: relative;
+    overflow: hidden;
 }
 .search{
     margin: 10px;
@@ -51,20 +56,41 @@ body{
     background-image: url("../img/search_hover.png");
 }
 
-.list{
+#main .list{
+    height: 390px;
     font-size: 16px;
-    margin: 10px;
+    margin: 0 10px;
     display: block;
+    overflow-y: scroll;
 }
+.list .letter{
+    width: 100%;
+    height: 12px;
+    position: relative;
+    background: #f1f1f1;
+    border-radius: 3px;
 
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.list .letter span{
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    font-size: 10px;
+    color: #2E2D3C;
+    display: inline-block;
+}
 .list li{
     position: relative;
     border-bottom: 1px dashed #f1f1f1;
 }
 .list li:hover{
-    background: #f1f1f1;
+   background: #fff9ec;
 }
-.list div{
+.list li>div{
     display: inline-block;
 }
 .list .text{
@@ -74,6 +100,7 @@ body{
     padding-left: 24px;
     overflow: hidden;
     cursor: pointer;
+    color: #2E2D3C;
     /*background-image: url("../img/search.png");*/
     background-position: 4px center;
     background-repeat: no-repeat;
@@ -110,16 +137,17 @@ body{
 
 .bottom{
     min-width:300px;
-    width: 100vw;
+    width: 100%;
     height: 40px;
     border-top: 1px dashed #f1f1f1;
     position: absolute;
     left: 0px;
     bottom: 0px;
     white-space: normal;
+    background: #fff;
 }
 .bottom>div{
-    max-width: 70vw;
+    max-width: 70%;
     line-height: 40px;
     margin: 0 10px;
     cursor: pointer;
@@ -141,14 +169,14 @@ body{
     height: 26px;
     margin-right: 4px;
     display: inline-block;
+    background-image: url('../img/user.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 26px 26px;
     border-radius: 50%;
-    background-color: grey;
 }
 .bottom .name{
-    max-width: 50vw;
+    max-width: 50%;
     height: 26px;
     line-height: 26px;
     overflow: hidden;
@@ -161,10 +189,20 @@ body{
 #add_page .create-random:hover{
      color: #0000FF;
  }
+#more_page .more-list .show-sync{
+    margin-left: 6px;
+    font-size: 12px;
+    color: #1E9FFF;
+}
+#sync_method p{
+    color: red;
+    font-size: 12px;
+    padding: 4px 20px;
+}
 
 /*------------------------form表单-------开始-------------*/
 .layui-layer-page{
-    width: 90vw;
+    width: 90%;
 }
 .form{
     padding: 20px 0;
