@@ -32,16 +32,8 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
         function show_user_info(data){
             var _user_info = !$.isEmptyObject(data)? data: user_info;
 
-            if(_user_info.photo){
-                $('.bottom .photo').css({backgroundImage: 'url('+ _user_info.photo +')'});
-            }
+            $('.bottom .photo').css({backgroundImage: 'url('+ (_user_info.photo? _user_info.photo: 'img/user.png') +')'});
             $('.bottom .name').html(_user_info.username || '登录');
-        }
-
-        //退出后页面信息处理
-        function logout(){
-            PassUtil.logout();
-            show_user_info();
         }
 
         //搜索请求
@@ -85,19 +77,19 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                         shade: [0.1,'#fff'] //0.1透明度的白色背景
                     });
 
-                    $.get(url.logout, {}, function(data){
+                    _get(url.logout, {}, function(data){
                         console.log(data);
+                        layer.close(index);
 
                         if(data.code == 200 || data.sub_code == 404){
                             layer.msg('退出成功');
 
-                            logout();
+                            PassUtil.logout();
+                            show_user_info();
+                            load_list();
                         }else{
                             layer.msg(data.sub_msg);
                         }
-
-                        layer.close(index);
-                        logout();
                     });
                 });
             }
@@ -124,7 +116,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                 shade: [0.1,'#fff'] //0.1透明度的白色背景
             });
 
-            $.post(url.login, request_data, function(data){
+            _post(url.login, request_data, function(data){
 
                 if(data.code == 200){
                     layer.msg('登录成功');
@@ -132,6 +124,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                     PassUtil.update_local_user_info(data.data);
 
                     show_user_info();
+                    load_list();
 
                     setTimeout(function(){
                         $('#login_page').hide();
@@ -174,7 +167,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                 shade: [0.1,'#fff'] //0.1透明度的白色背景
             });
 
-            $.post(url.register, $(form).serialize(), function(data){
+            _post(url.register, $(form).serialize(), function(data){
                 console.log(data);
 
                 if(data.code == 200){
