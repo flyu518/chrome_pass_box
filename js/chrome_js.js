@@ -10,8 +10,8 @@ var PassUtil = {
 
     ,_bg: chrome.extension.getBackgroundPage()  //background 对象
 
-    ,set_storage: function (obj) {
-        chrome.storage.local.set(obj);
+    ,set_storage: function (json) {
+        chrome.storage.local.set(json);
     }
     ,get_storage: function (arr, callback){
         chrome.storage.local.get(arr, function(sl){
@@ -19,18 +19,45 @@ var PassUtil = {
             callback && callback(sl);
         });
     }
-    ,set_storage_c: function(obj){
-        this.set_storage(obj);
+    ,set_storage_c: function(json){
+        this.set_storage(json);
     }
     ,get_storage_c: function (arr, callback){
         this.get_storage(arr, callback);
     }
-    ,set_storage_w: function(obj){}
+    ,set_storage_w: function(json){}
     ,get_storage_w: function (arr, callback){}
 
+    /**
+     * h5本地储存，好处：同步方式，但是background.js取不到，所以范围小的可以用
+    */
+    ,set_local_storage: function(json){
+        for(let key in json){
+            localStorage[key] = JSON.stringify(json[key]);
+        }
+        return true;
+    }
+
+    /**
+     *  同步，有返回值
+     *
+     * @param string|array     要获取的键
+     * @return json     {}     对应的json对象
+     */
+    ,get_local_storage: function (arr){
+        var arr = typeof arr == 'string'? [arr]: arr;
+
+        var sl = {};
+        arr.forEach(function(item){
+            sl[item] = localStorage[item]? JSON.parse(localStorage[item]): '';
+        })
+
+        return sl;
+    }
+
     //只能 web 用的 session 储存,谷歌扩展的时候使用 set_storage
-    ,set_session_storage: function(obj){
-        this.set_storage(obj);
+    ,set_session_storage: function(json){
+        this.set_storage(json);
     }
     ,get_session_storage: function (arr, callback){
         this.get_storage(arr, callback);
@@ -90,26 +117,48 @@ var PassUtil = {
         var p = data.p || 1;
         var limit = data.limit || 15;
         var keyword = data.keyword || ''; //多个用空格分割
+        var tag = data.tag || ''; //不支持多个
         var search_fileds = ['site_name', 'desc', 'username']; //要搜索的字段 site_name、desc、username
+        var list = this._bg.pass_all;
+        var tags = [];  //所有的标签
 
         //这里不存本地读取了， background.js 初始化的时候已经读取了，全部再变量 pass_all 里面
         var returnData = {
             count: 0,
             list: [],
-            limit: limit
+            limit: limit,
+            tags: []    //统计出所有的标签
         };
 
-        if($.isEmptyObject(this._bg.pass_all)){
+        if($.isEmptyObject(list)){
             success(show('数据为空', 300));
             return true;
         }
 
+        //统计所有的标签、去重
+        list.forEach(function(item){
+            if(!tags.includes(item.tag)){
+                tags.push(item.tag);
+            }
+        })
+
+        returnData.tags = tags;
+
+        //如果标签存在，先搜标签
+        if(tag && tag != '全部'){
+            tag = tag == '未设置'? '': tag;
+            list = array_search(list, ['tag'], tag, true);
+            if(!list || !list.length){
+                success(show('数据为空', 300, returnData));
+                return true;
+            }
+        }
+
         //搜索
-        var list = this._bg.pass_all;
         if(keyword){
             list = array_search(list, search_fileds, keyword);
             if(!list || !list.length){
-                success(show('数据为空', 300));
+                success(show('数据为空', 300, returnData));
                 return true;
             }
         }
@@ -235,6 +284,18 @@ var PassUtil = {
         this._bg.update_sync_method(new_method);
     }
 
+    //保存选择的标签
+    ,update_search_tag: function(tag){
+        tag = tag || '';
+        this.set_local_storage({search_tag: tag});
+    }
+
+    //获取选择的标签
+    ,get_search_tag: function(){
+        var tag_tmp = this.get_local_storage('search_tag');
+        return tag_tmp.search_tag || '';
+    }
+
     /**
      *  更新本地站点列表版本
      *
@@ -249,7 +310,7 @@ var PassUtil = {
     /**
      * 保存、更新本地站点数据
      *
-     * 步骤：1、替换、添加至 this._pass_all；2、更新本地储存；3、处理创建、更新时间，4、处理当前站点在整个列表的索引 _index
+     * 步骤：1、替换、添加至 this._bg.pass_all；2、更新本地储存；3、处理创建、更新时间，4、处理当前站点在整个列表的索引 _index
      *
      * @param obj   pass    json 对象
      */
@@ -265,7 +326,7 @@ var PassUtil = {
         }else{
             pass.createdTime = time;
             pass.updatedTime = time;
-            pass._index      = this._pass_all.length;
+            pass._index      = this._bg.pass_all.length;
             pass._is_changed = true;    //这个模板里面已经有了，不用在这指定了
 
             this._bg.pass_all.push(pass);

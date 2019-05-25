@@ -50,6 +50,22 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
             }
         })
 
+        //选择标签
+        $('.tags').on('click', 'span', function(){
+            $(this).addClass('select').siblings().removeClass('select');
+            var tag = $(this).html();
+
+            if(tag == PassUtil.get_search_tag()){
+                return;
+            }
+
+            //储存
+            PassUtil.update_search_tag(tag);
+
+            //加载列表
+            load_list();
+        });
+
         //点击用户框显示登录或退出页面
         $('.bottom .user').click(function(){
             if(!PassUtil.is_server_online()){
@@ -81,15 +97,16 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                         console.log(data);
                         layer.close(index);
 
-                        if(data.code == 200 || data.sub_code == 404){
+                        if(data.code == 200 || data.sub_code == 404 || data.code == 100){
                             layer.msg('退出成功');
-
-                            PassUtil.logout();
-                            show_user_info();
-                            load_list();
                         }else{
                             layer.msg(data.sub_msg);
                         }
+
+                        //不管结果了，直接退出，要不然服务器端不在线退出失败
+                        PassUtil.logout();
+                        show_user_info();
+                        load_list();
                     });
                 });
             }
@@ -177,6 +194,8 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
 
                     show_user_info();
 
+                    load_list();
+
                     setTimeout(function(){
                         $('#login_page').hide();
                         layer.closeAll();
@@ -188,7 +207,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
             });
         });
 
-        //点击站点显示添加添加站点页面
+        //点击站点显示添加、编辑站点页面
         $('#main .list').on('click', '.text', function(e){
             var id          = $(this).parent().data('id') || '';
             var _index      = $(this).parent().data('_index'); //这个有可能是0
@@ -196,6 +215,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
             var desc        = $(this).parent().data('desc') || '';
             var username    = $(this).parent().data('username') || '';
             var password    = $(this).parent().data('password') || '';
+            var tag         = $(this).parent().data('tag') || '';
             var site_url    = $(this).parent().data('site_url') || '';
             var site_login_url = $(this).parent().data('site_login_url') || '';
 
@@ -216,6 +236,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
                     $('#add_page input[name="username"]').val(username);
                     $('#add_page input[name="password"]').val(password);
                     $('#add_page input[name="site_url"]').val(site_url);
+                    $('#add_page input[name="tag"]').val(tag);
                     $('#add_page input[name="site_login_url"]').val(site_login_url);
                 },
                 end:function(){
@@ -539,7 +560,6 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
     });
 });
 
-
 function init_page() {
 
     var body_el            = document.body
@@ -553,9 +573,10 @@ function init_page() {
 
     var main_height = $('#main').outerHeight(true);
     var search_height = $('#main .search').outerHeight(true);
+    var tags_height = $('#main .tags').outerHeight(true);
     var bottom_height = $('#main .bottom').outerHeight(true);
     $('body').css({height: main_height, width: $('#main').outerWidth(true)});
-    $('#main .list').css({height: main_height - search_height - bottom_height});
+    $('#main .list').css({height: main_height - search_height - tags_height - bottom_height});
 }
 
 //加载站点列表（放在外面是为了让 background.js 同步完成之后调用）
@@ -564,11 +585,13 @@ function load_list(obj){
     var p       = obj.p || 1;
     var limit   = obj.limit || 15;
     var keyword = obj.keyword || '';
+    var tag     = PassUtil.get_search_tag();
 
     var request_data = {
         p:  p,
         limit: limit,
-        keyword: $.trim(keyword)
+        keyword: $.trim(keyword),
+        tag: tag
     }
 
     var index = layer.load(1, {
@@ -579,9 +602,13 @@ function load_list(obj){
         layer.close(index);
         console.log(data);
 
+        //先加载标签
+        data.data && load_tags(data.data.tags);
+
         var li = '';
 
         if(data.code == 200){
+
             var item;
             var list = data.data.list;
 
@@ -591,6 +618,7 @@ function load_list(obj){
 
                     li += '<li data-id="'+ item.id +'" data-_index="'+ item._index +'" data-site_name="'+ item.site_name +'"\
                          data-desc="'+ item.desc +'" data-username="'+ item.username +'" data-password="'+ item.password +'"\
+                          data-tag="'+ item.tag +'"\
                           data-site_url="'+ item.site_url +'" data-site_login_url="'+ item.site_login_url +'">\
                         <div class="text" style="background-image: url(\''+ get_icon(item.site_url) +'\')" title="'+ item.desc +'">'
                         + item.site_name +
@@ -607,8 +635,10 @@ function load_list(obj){
                     li += '<div class="letter"><span>'+ $(this)[0]['letter'] +'</span></div>';
                     $.each($(this)[0]['data'], function(){
                         item = $(this)[0];
+
                         li += '<li data-letter="'+ item +'" data-id="'+ item.id +'" data-_index="'+ item._index +'" data-site_name="'+ item.site_name +'"\
                                     data-desc="'+ item.desc +'" data-username="'+ item.username +'" data-password="'+ item.password +'"\
+                                    data-tag="'+ item.tag +'"\
                                     data-site_url="'+ item.site_url +'" data-site_login_url="'+ item.site_login_url +'">\
                                     <div class="text" style="background-image: url(\''+ get_icon(item.site_url) +'\')" title="'+ item.desc +'">'
                             + item.site_name +
@@ -630,4 +660,48 @@ function load_list(obj){
 
         $('#main .list').html(li);
     });
+}
+
+/**
+ * 加载用户标签
+ *
+ * 注意：自动生成的有：全部、未设置；全部的时候不加条件，未设置的时候搜索为''的
+ */
+function load_tags(tags){
+    if(!Array.isArray(tags) || !tags.length){
+        return $('.tags').addClass('hide');
+    }
+
+    var select_tag = PassUtil.get_search_tag();
+    var is_selected = false;    //是否有已选择的，没有的话，加到全部上
+    var span = '';
+    var no_tag_span = '';   //标签未设置的span，如果有放到最后
+
+    //先排序
+    tags = array_sort(tags);
+
+    tags.forEach(function(item){
+        if(!item){  //未设置的
+            if(select_tag == '未设置'){
+                is_selected = true;
+                no_tag_span = '<span class="select">未设置</span>';
+            }else{
+                no_tag_span = '<span>未设置</span>';
+            }
+        }else{
+            if(select_tag == item){
+                is_selected = true;
+                span += '<span class="select">'+ item +'</span>';
+            }else{
+                span += '<span>'+ item +'</span>';
+            }
+        }
+    })
+
+    span = (!is_selected && (select_tag == '全部' || select_tag == '')? '<span class="select">全部</span>': '<span>全部</span>') + span + no_tag_span;
+
+    $('.tags').html(span);
+
+    //重新计算 .list 的长度（如果标签太多可能 .list 遮盖）
+    init_page();
 }

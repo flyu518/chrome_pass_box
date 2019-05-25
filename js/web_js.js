@@ -6,9 +6,9 @@
 
 var PassUtil = {
     type: 'web_js'
-    ,set_storage: function (obj) {  //
-        for(let key in obj){
-            localStorage[key] = JSON.stringify(obj[key]);
+    ,set_storage: function (json) {  //
+        for(let key in json){
+            localStorage[key] = JSON.stringify(json[key]);
         }
         return true;
     }
@@ -22,19 +22,44 @@ var PassUtil = {
 
         callback && callback(sl);
     }
-    ,set_storage_c: function(obj){}
+    ,set_storage_c: function(json){}
     ,get_storage_c: function (arr, callback){}
-    ,set_storage_w: function(obj){
-        this.set_storage(obj);
+    ,set_storage_w: function(json){
+        this.set_storage(json);
     }
     ,get_storage_w: function (arr, callback){
         this.get_storage(arr, callback);
     }
 
+    /**
+     * 和set_storage一样，为了统一扩展做的
+     */
+    ,set_local_storage: function(json){
+        this.set_storage(json);
+        return true;
+    }
+
+    /**
+     *  同步，有返回值（和get_storage一样，就是同步返回）
+     *
+     * @param string|array     要获取的键
+     * @return json     {}     对应的json对象
+     */
+    ,get_local_storage: function (arr){
+        var arr = typeof arr == 'string'? [arr]: arr;
+
+        var sl = {};
+        arr.forEach(function(item){
+            sl[item] = localStorage[item]? JSON.parse(localStorage[item]): '';
+        })
+
+        return sl;
+    }
+
     //只能 web 用的 session 储存,谷歌扩展的时候使用 set_storage
-    ,set_session_storage: function(obj){
-        for(let key in obj){
-            sessionStorage[key] = JSON.stringify(obj[key]);
+    ,set_session_storage: function(json){
+        for(let key in json){
+            sessionStorage[key] = JSON.stringify(json[key]);
         }
         return true;
     }
@@ -123,5 +148,18 @@ var PassUtil = {
     ,pass_clear: function(){}
 
     //更改站点数据同步方式（只有在扩展的时候才有效）
-    ,change_sync_method: function(new_method){}
+    ,update_sync_method: function(new_method){}
+
+    //保存选择的标签
+    ,update_search_tag: function(tag){
+        tag = tag || '';
+        this.set_local_storage({search_tag: tag});
+    }
+
+    //获取选择的标签
+    ,get_search_tag: function(){
+        var tag_tmp = this.get_local_storage('search_tag');
+        return tag_tmp.search_tag || '';
+    }
+
 }

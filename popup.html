@@ -14,6 +14,9 @@
                 <input class="keyword" type="text" placeholder="网站名、备注、账号，多个空格隔开">
                 <div class="btn"></div>
             </div>
+            <div class="tags">
+                <!--<span>全部</span><span>生活</span><span>学习</span>-->
+            </div>
             <list class="list">
                 <!--<li>
                     <div class="text">淘宝</div>
@@ -64,8 +67,8 @@
         </div>
         <div class="form-item form-item-btn">
             <div class="input-block">
-                <div class="btn login">登录</div>
                 <div class="btn register">注册</div>
+                <div class="btn login">登录</div>
             </div>
         </div>
     </form>
@@ -89,7 +92,7 @@
         <div class="form-item">
             <label class="form-label">账号</label>
             <div class="input-inline">
-                <input type="text" name="username" placeholder="必填" class="input" >
+                <input type="text" name="username" placeholder="必填" autocomplete="off" class="input" >
             </div>
             <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
@@ -99,6 +102,13 @@
                 <input type="text" name="password" placeholder="必填" class="input">
             </div>
             <div class="form-mid word-aux"><div class="create-random">自动生成</div></div>
+        </div>
+        <div class="form-item">
+            <label class="form-label">标签</label>
+            <div class="input-inline">
+                <input type="text" name="tag" placeholder="不支持多个" autocomplete="off" class="input" >
+            </div>
+            <!--<div class="form-mid word-aux">辅助文字</div>-->
         </div>
         <div class="form-item">
             <label class="form-label">网站网址</label>
@@ -136,12 +146,6 @@
         <li>
             <div class="text create-random">生成随机密码</div>
         </li>
-        <!--<li>
-            <div class="text up-cloud">上传数据至服务器</div>
-        </li>
-        <li>
-            <div class="text down-cloud">下载服务器数据</div>
-        </li>-->
         <li>
             <div class="text up-down-cloud">同步本地和服务器数据</div>
         </li>
@@ -163,7 +167,7 @@
 <div id="sync_method" class="hide">
     <form class="form layui-form" action="">
         <p>手动：没有网络也可以使用，不同步不用登录</p>
-        <p>自动：必须在有网络的情况下，需要登录，及时更新（10s）</p>
+        <p>自动：必须在有网络的情况下，需要登录，及时更新</p>
         <div class="form-item">
             <label class="form-label">同步方式</label>
             <div class="input-inline">

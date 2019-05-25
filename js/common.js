@@ -9,6 +9,7 @@ var url = {
     pass_detail : base_url +'/pass/detail',
     pass_add : base_url +'/pass/add',
     pass_delete : base_url +'/pass/delete',
+    pass_add_tags : base_url +'/pass/add-tags',
     pass_sync : base_url +'/pass/sync',
     get_status : base_url +'/pass/get-status',
     user_test : base_url +'/user/test',
@@ -149,6 +150,7 @@ function json_replace(oldData, newData){
  * @param array         arr       被搜索的数组
  * @param array|string  fileds    被搜索的字段数组或字符串，如果是一、二维数组，可以为空
  * @param string        keywords  要搜索的字符串，多个用空格隔开
+ * @param bool          is_all_eq 是否全等，默认false,模糊；true就不是模糊了
  *
  * @return array|bool       符合条件的列表
  *
@@ -156,10 +158,10 @@ function json_replace(oldData, newData){
  * {'id': 2, 'name': '小明', 'desc': '哈航昂'}, {'id': 4, 'name': '大明', 'desc': '哦哦'}];
  *  array_search(arr, ['name', 'desc'], 'flyu 哦')
  */
-function array_search(arr, fileds, keywords){
+function array_search(arr, fileds, keywords, is_all_eq){
     if(!Array.isArray(arr)) return false;
     if(!Array.isArray(fileds)) fileds = [fileds];
-    if(typeof keywords != 'string' || !keywords) return false;
+    if(typeof keywords != 'string') return false;   //可以空字符串
     keywords = $.trim(keywords);
 
     var keywords = $.trim(keywords).replace(/\s+/g, '|');
@@ -169,16 +171,28 @@ function array_search(arr, fileds, keywords){
     var data = [];
     arr.forEach(function(item, key){
         if(typeof item == "string" || typeof item == "number"){  //一维数组
-            if(new RegExp(keywords, 'i').test(item)){
-                data.push(item);
+            if(is_all_eq){
+                if(item === keywords){
+                    data.push(item);
+                }
+            }else{
+                if(new RegExp(keywords, 'i').test(item)){
+                    data.push(item);
+                }
             }
         }else if(Array.isArray(item)){  //二维数组
             var s_data = [];
             item.forEach(function(s_item){
                 if(typeof s_item != 'string' && typeof item != "number") return ;
 
-                if(new RegExp(keywords, 'i').test(s_item)){
-                    s_data.push(s_item);
+                if(is_all_eq){
+                    if(s_item === keywords){
+                        data.push(item);
+                    }
+                }else{
+                    if(new RegExp(keywords, 'i').test(s_item)){
+                        s_data.push(s_item);
+                    }
                 }
             })
             s_data.length && data.push(s_data);
@@ -190,9 +204,16 @@ function array_search(arr, fileds, keywords){
                 if(!arr_json_index.includes(key) && fileds.includes(s_key)){
                     if(typeof s_item != 'string' && typeof s_item != "number") return ; //TODO
 
-                    if(new RegExp(keywords, 'i').test(s_item)){
-                        data.push(item);
-                        arr_json_index.push(key);
+                    if(is_all_eq){
+                        if(s_item === keywords){
+                            data.push(item);
+                            arr_json_index.push(key);
+                        }
+                    }else{
+                        if(new RegExp(keywords, 'i').test(s_item)){
+                            data.push(item);
+                            arr_json_index.push(key);
+                        }
                     }
                 }
             }
@@ -291,7 +312,7 @@ function array_sort(arr, sort, field){
 
     var result;
     arr.sort(function (item1, item2) {
-        result = getValue(item1, field).localeCompare(getValue(item2, field), 'zh-CN');
+        result = getValue(item1, field).toString().localeCompare(getValue(item2, field), 'zh-CN');
         result = sort? -result: result;
 
         return result;

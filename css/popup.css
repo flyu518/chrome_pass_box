@@ -28,7 +28,7 @@ body{
     overflow: hidden;
 }
 .search{
-    margin: 10px;
+    margin: 10px 10px 4px;
     border: 1px solid #0A8CD2;
     box-sizing:border-box;
     position: relative;
@@ -55,7 +55,28 @@ body{
 .search .btn:hover{
     background-image: url("../img/search_hover.png");
 }
-
+.tags{
+    margin: 0px 20px 5px;
+}
+.tags span{
+    height: 14px;
+    line-height: 14px;
+    font-size: 12px;
+    padding: 0px 4px;
+    margin-left: 2px;
+    color: #737383;
+    border: 1px solid #9F9F9F;
+    cursor: pointer;
+    border-radius: 2px;
+}
+.tags span:hover{
+    color: #1E9FFF;
+    border: 1px solid #1E9FFF;
+}
+.tags .select{
+    color: #1E9FFF;
+    border: 1px solid #1E9FFF;
+}
 #main .list{
     height: 390px;
     font-size: 16px;
@@ -194,7 +215,7 @@ body{
     font-size: 12px;
     color: #1E9FFF;
 }
-#sync_method p{
+#sync_method p, #add_tags p{
     color: red;
     font-size: 12px;
     padding: 4px 20px;

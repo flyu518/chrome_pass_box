@@ -37,6 +37,7 @@ var pass_scheme = {
         password    : '',
         sort_num    : 100,  //默认100，从小到大排序
         status      : 0,    //0正常，1删除
+        tag         : '',   //标签
         createdTime : get_timestamp(),  //这个最好传过来，如果打开页面添加几个，时间是不会变得
         updatedTime : get_timestamp(),
         _index      : '',  //这个后台没有，前台使用的一个索引，每次操作后（增、删）都要把站点自身位置更新一下，本地删除、更新等操作要用到
@@ -63,6 +64,7 @@ console.log('init');
         is_server_login     = s.is_server_login && s.user_info? true: false;
         sync_method         = s.sync_method == 2? 2: 1;
         local_pass_box_version = s.local_pass_box_version || -1;
+        auto_sync_fail_count_current = 0;   //初始化0
 
         pass_all  = s.pass_all || []; //这个是谷歌 chrome_js.js 扩展独有的，web_js.js 没有也不会报错
         pass_delete_list  = s.pass_delete_list || [];  //同上
@@ -206,7 +208,6 @@ console.log('同步开始……');
         'local_delete_list': JSON.stringify(pass_delete_list),
         'local_list': JSON.stringify(changed_list)
     };
-
 console.log('数据整理成功，开始上传……');
 
     _post(url.pass_sync, local_pass_data, function(response){
@@ -328,7 +329,6 @@ function update_pass_delete_storage(arr){
 
     set_storage({pass_delete_list: pass_delete_list});
 }
-
 
 function set_storage(obj) {
     chrome.storage.local.set(obj);
