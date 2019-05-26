@@ -81,6 +81,9 @@ console.log('start_int');
     interval = setInterval(function(){
 
         _num%5 == 0 && get_status();   //5s一次算了，太快了感觉不好
+
+        if(auto_sync_fail_count_current >= 3 && _num % (60 * 10) == 0) auto_sync_fail_count_current = 0; //10分钟清空1次，要不然只要不出发 init 就不会尝试了
+
         //_num%5 == 0 && auto_sync_fail_count_current < auto_sync_fail_count && pass_sync();// 这个不自动执行了，当改变的时候通过 get_status() 调用
         //_num % 5 == 0 &&  get_popup_attr();  //不执行了，不算多而且关闭就获取不了了，当popup更改之后会通知
 
@@ -150,7 +153,8 @@ console.log('sync_method:'+ sync_method +';local_v:'+local_pass_box_version+';cl
 
                 //如果不一样就同步
                 if( is_online() && sync_method == 2 &&
-                    auto_sync_fail_count_current < auto_sync_fail_count && pass_box_version != local_pass_box_version){
+                    auto_sync_fail_count_current < auto_sync_fail_count &&
+                    pass_box_version != local_pass_box_version){
                     console.log('!sync');
                     pass_sync();
                 }
