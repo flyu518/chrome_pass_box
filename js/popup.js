@@ -250,7 +250,7 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
         //复制密码
         $('#main .list').on('click', '.copy-pass', function (e) {
             var password = $(this).parent().parent().data('password');
-            var out_input = $('<input value="'+ password +'" style="display: none;"></input>');
+            var out_input = $('<input value="'+ password +'" style="position: absolute; left: -10000px; top: -1000000px;"></input>');
             $('html').append(out_input);
             out_input.select();
             document.execCommand("Copy");
