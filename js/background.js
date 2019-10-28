@@ -25,7 +25,7 @@ var pass_all = [];
 //已删除的线上的站点的id数组，每次同步的时候带上，在服务器端删除对应的
 var pass_delete_list = [];
 
-//扩展独有，站点数据结构，和后台的一样，这里算是设置默认值了，可以调用 popup.js -> json_replace(_pass_scheme, newData)，进行替换
+//扩展独有，站点数据结构，和后台的一样，这里算是设置默认值了，可以调用 common.js -> json_replace(_pass_scheme, newData)，进行替换
 var pass_scheme = {
     id          : null, //存在本地时候可以为空，上传的上时候会自动生成
         user_id     : null, //存在本地的时候可以为空，但是上传的时候会自动补上
