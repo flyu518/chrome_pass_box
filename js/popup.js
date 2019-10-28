@@ -207,6 +207,15 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
             });
         });
 
+        //找回密码（根据邮箱）
+        //TODO::    2019/10/28 15:04
+
+        //设置头像
+        //TODO::    2019/10/28 15:04
+
+        //设置用户信息
+        //TODO::    2019/10/28 15:04
+
         //点击站点显示添加、编辑站点页面
         $('#main .list').on('click', '.text', function(e){
             var id          = $(this).parent().data('id') || '';
@@ -514,17 +523,17 @@ loadScript("js/"+ (is_chrome? 'chrome': 'web') +"_js.js", function(){
 
         //更多页面-》清空本地站点数据
         $('#more_page .clear-local').click(function (e) {
-        layer.confirm('要清空吗？', {
-            btn: ['清空','取消'] //按钮
-        }, function(){
-            PassUtil.pass_clear();
+            layer.confirm('要清空吗？', {
+                btn: ['清空','取消'] //按钮
+            }, function(){
+                PassUtil.pass_clear();
 
-            layer.msg('处理成功');
+                layer.msg('处理成功');
 
-            load_list();
-            e.preventDefault();
+                load_list();
+                e.preventDefault();
+            });
         });
-    });
 
         //更多页面-》清空服务器站点数据
         $('#more_page .clear-cloud').click(function (e) {
